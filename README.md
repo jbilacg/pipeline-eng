@@ -1,112 +1,53 @@
-Desafio Engenharia de Dados - Coco Bambu 2025
-Participante: Jéssica Bilac Gaspareto
 
-Prazo de Entrega: 31/07/2025
+Markdown
 
-Este repositório contém a solução para o Desafio de Engenharia de Dados proposto. Aqui você encontrará os scripts, a modelagem de dados e as respostas para as questões conceituais.
+# Projeto de Engenharia de Dados - Processamento de JSON com Databricks
 
-Ferramentas Utilizadas
-Databricks Free Edition
+Este projeto demonstra a ingestão, modelagem e processamento de dados JSON utilizando o Databricks Free Edition. O objetivo é transformar um arquivo JSON aninhado (`ERP.json`) em um modelo relacional normalizado para facilitar análises e operações em um contexto de sistema ERP.
 
-Desafio 1: Processamento de Dados de ERP
-O primeiro desafio consiste em analisar um arquivo JSON de um sistema ERP, propor uma modelagem de dados relacional e implementar um script para processar e carregar esses dados em tabelas.
+---
 
-1. Análise da Estrutura do JSON
-Para iniciar, foi realizada a leitura e a análise do schema do arquivo ERP.json para entender sua estrutura aninhada.
+## Participante
 
-Script de Análise:
+* **Jéssica Bilac Gaspareto**
 
-# Usado para entendimento da estrutura do JSON fornecido:
+---
 
+## Ferramentas Utilizadas
+
+* **Databricks Free Edition**
+* **PySpark** (para processamento de dados)
+
+---
+
+## Desafio 1: Modelagem e Criação de Tabelas a Partir de um JSON
+
+### 1. Entendimento da Estrutura do JSON
+
+Para compreender a estrutura do JSON fornecido (`ERP.json`), foram utilizadas as funções `printSchema()` e `display()` no Databricks. Isso permitiu visualizar o schema complexo do JSON, que inclui arrays e structs aninhadas.
+
+**Código para Análise do Schema:**
+
+```python
+# Define o caminho do arquivo JSON
 caminho_json = "/Volumes/workspace/default/data/ERP.json"
 
+# Lê o arquivo JSON, tratando múltiplas linhas
 df = spark.read.option("multiline", "true").json(caminho_json)
 
-# Imprime o schema do DataFrame
+# Exibe o schema do DataFrame
 df.printSchema()
 
-# Exibe o conteúdo do DataFrame
+# Exibe uma amostra dos dados para visualização
 df.display()
+```
 
-Schema Resultante:
+## 2. Modelo Físico e Normalização
+A normalização para a 3ª Forma Normal (3NF) foi adotada para o modelo relacional. Essa escolha foi motivada pela natureza de um sistema ERP, que geralmente lida com grandes volumes de dados e requer operações complexas, beneficiando-se da redução de redundância e da melhoria da integridade dos dados.
 
-root
- |-- curUTC: string (nullable = true)
- |-- guestChecks: array (nullable = true)
- |    |-- element: struct (containsNull = true)
- |    |    |-- balDueTtl: string (nullable = true)
- |    |    |-- chkNum: long (nullable = true)
- |    |    |-- chkTtl: double (nullable = true)
- |    |    |-- clsdBusDt: string (nullable = true)
- |    |    |-- clsdFlag: boolean (nullable = true)
- |    |    |-- clsdLcl: string (nullable = true)
- |    |    |-- clsdUTC: string (nullable = true)
- |    |    |-- detailLines: array (nullable = true)
- |    |    |    |-- element: struct (containsNull = true)
- |    |    |    |    |-- aggQty: long (nullable = true)
- |    |    |    |    |-- aggTtl: double (nullable = true)
- |    |    |    |    |-- busDt: string (nullable = true)
- |    |    |    |    |-- chkEmpId: long (nullable = true)
- |    |    |    |    |-- chkEmpNum: long (nullable = true)
- |    |    |    |    |-- detailLcl: string (nullable = true)
- |    |    |    |    |-- detailUTC: string (nullable = true)
- |    |    |    |    |-- dspQty: long (nullable = true)
- |    |    |    |    |-- dspTtl: double (nullable = true)
- |    |    |    |    |-- dtlId: long (nullable = true)
- |    |    |    |    |-- dtlOcNum: string (nullable = true)
- |    |    |    |    |-- dtlOtNum: long (nullable = true)
- |    |    |    |    |-- guestCheckLineItemId: long (nullable = true)
- |    |    |    |    |-- lastUpdateLcl: string (nullable = true)
- |    |    |    |    |-- lastUpdateUTC: string (nullable = true)
- |    |    |    |    |-- lineNum: long (nullable = true)
- |    |    |    |    |-- menuItem: struct (nullable = true)
- |    |    |    |    |    |-- activeTaxes: string (nullable = true)
- |    |    |    |    |    |-- inclTax: double (nullable = true)
- |    |    |    |    |    |-- miNum: long (nullable = true)
- |    |    |    |    |    |-- modFlag: boolean (nullable = true)
- |    |    |    |    |    |-- prcLvl: long (nullable = true)
- |    |    |    |    |-- rvcNum: long (nullable = true)
- |    |    |    |    |-- seatNum: long (nullable = true)
- |    |    |    |    |-- svcRndNum: long (nullable = true)
- |    |    |    |    |-- wsNum: long (nullable = true)
- |    |    |-- dscTtl: long (nullable = true)
- |    |    |-- empNum: long (nullable = true)
- |    |    |-- gstCnt: long (nullable = true)
- |    |    |-- guestCheckId: long (nullable = true)
- |    |    |-- lastTransLcl: string (nullable = true)
- |    |    |-- lastTransUTC: string (nullable = true)
- |    |    |-- lastUpdatedLcl: string (nullable = true)
- |    |    |-- lastUpdatedUTC: string (nullable = true)
- |    |    |-- nonTxblSlsTtl: string (nullable = true)
- |    |    |-- numChkPrntd: long (nullable = true)
- |    |    |-- numSrvcRd: long (nullable = true)
- |    |    |-- ocNum: string (nullable = true)
- |    |    |-- opnBusDt: string (nullable = true)
- |    |    |-- opnLcl: string (nullable = true)
- |    |    |-- opnUTC: string (nullable = true)
- |    |    |-- otNum: long (nullable = true)
- |    |    |-- payTtl: double (nullable = true)
- |    |    |-- rvcNum: long (nullable = true)
- |    |    |-- subTtl: double (nullable = true)
- |    |    |-- taxes: array (nullable = true)
- |    |    |    |-- element: struct (containsNull = true)
- |    |    |    |    |-- taxCollTtl: double (nullable = true)
- |    |    |    |    |-- taxNum: long (nullable = true)
- |    |    |    |    |-- taxRate: long (nullable = true)
- |    |    |    |    |-- txblSlsTtl: double (nullable = true)
- |    |    |    |    |-- type: long (nullable = true)
- |    |    |-- tblName: string (nullable = true)
- |    |    |-- tblNum: long (nullable = true)
- |-- locRef: string (nullable = true)
+Diagrama de Entidade-Relacionamento (Conceitual em formato similar ao DBML):
 
-2. Modelagem de Dados
-Foi proposta uma modelagem relacional baseada na 3ª Forma Normal (3FN) para garantir a integridade, reduzir a redundância e otimizar a performance para operações complexas, comuns em sistemas de ERP.
-
-(Opcional: Adicione aqui o arquivo Modelo físico.png ao seu repositório e descomente a linha abaixo)
-
-<!-- ![Modelo Físico](Modelo físico.png) -->
-
-Código DBML (Database Markup Language) do Modelo:
+```SQL
 
 Table guest_check {
   guest_check_id BIGINT [pk]
@@ -203,34 +144,38 @@ Table error_code {
   message STRING
 }
 
-3. Criação das Tabelas (Script ETL)
-O script PySpark a seguir realiza o processo de Extração, Transformação e Carga (ETL), lendo o JSON, aplicando as transformações para normalizar os dados conforme o modelo e salvando o resultado em tabelas no formato Delta Lake.
+```
+## 3. Criação das Tabelas no Databricks
+As tabelas foram criadas no Databricks utilizando PySpark, através de operações de explode para achatar as estruturas aninhadas e select para renomear e reorganizar as colunas conforme o modelo relacional. As tabelas são salvas no formato Delta Lake para garantir transacionalidade e versionamento.
+
+Código para Criação e População das Tabelas:
+
+```Python
 
 from pyspark.sql.functions import explode, col, monotonically_increasing_id
 
-# 1. Leitura do arquivo JSON
 caminho_json = "/Volumes/workspace/default/data/ERP.json"
 df = spark.read.option("multiline", "true").json(caminho_json)
 
-# 2. Explode do array principal 'guestChecks' para obter uma linha por registro de conta
+# Extrai e achata a array 'guestChecks'
 df_guest_checks = df.withColumn("guestCheck", explode("guestChecks")).select("guestCheck.*")
 
-# 3. Criação do DataFrame principal 'guest_check'
+# Cria a tabela guest_check com um ID explícito
 df_guest_check = df_guest_checks.withColumn("guest_check_id", col("guestCheckId").cast("long"))
 
-# 4. Criação do DataFrame 'detail_line' explodindo o array 'detailLines'
+# Extrai e achata a array 'detailLines' e associa ao guest_check_id
 df_detail_lines = df_guest_check.withColumn("detailLine", explode("detailLines")).select(
     col("guest_check_id"),
     col("detailLine.*")
 )
 
-# 5. Criação do DataFrame 'menu_item' a partir dos detalhes
+# Cria a tabela menu_item, renomeando e removendo duplicatas
 df_menu_item = df_detail_lines.select(
-    col("dtlId").alias("detail_line_id"),
+    col("dtlId").alias("detail_line_id"), # Usado para referência em detail_line, mas miNum é a PK
     col("menuItem.*")
 ).withColumnRenamed("miNum", "menu_item_id").dropDuplicates(["menu_item_id"])
 
-# 6. Criação do DataFrame 'tax'
+# Cria a tabela tax, extraindo dados da array 'taxes' e gerando um ID único
 df_tax = df_guest_check.withColumn("tax", explode("taxes")).select(
     col("guest_check_id"),
     col("tax.taxNum"),
@@ -238,8 +183,7 @@ df_tax = df_guest_check.withColumn("tax", explode("taxes")).select(
     col("tax.taxRate")
 ).withColumn("tax_id", monotonically_increasing_id())
 
-# 7. Criação de DataFrames para campos aninhados (assumindo que podem existir)
-# Nota: O JSON de exemplo não continha esses campos, mas a estrutura está preparada.
+# Cria tabelas auxiliares para detalhes específicos, filtrando por valores não nulos
 df_discount = df_detail_lines.filter(col("discount").isNotNull()).select(
     col("dtlId").alias("detail_line_id"),
     col("discount.*")
@@ -260,53 +204,70 @@ df_error_code = df_detail_lines.filter(col("errorCode").isNotNull()).select(
     col("errorCode.*")
 )
 
-# 8. Salvando as tabelas no formato Delta
+# Exibição dos schemas e algumas linhas das tabelas criadas para verificação
+print("guest_check schema")
+df_guest_check.printSchema()
+df_guest_check.show(5, truncate=False)
+
+print("detail_line schema")
+df_detail_lines.printSchema()
+df_detail_lines.show(5, truncate=False)
+
+print("menu_item schema")
+df_menu_item.printSchema()
+df_menu_item.show(5, truncate=False)
+
+print("tax schema")
+df_tax.printSchema()
+df_tax.show(5, truncate=False)
+
+# Salvando os DataFrames como tabelas Delta no Databricks
 df_guest_check.write.format("delta").mode("overwrite").saveAsTable("guest_check")
 df_detail_lines.write.format("delta").mode("overwrite").saveAsTable("detail_line")
 df_menu_item.write.format("delta").mode("overwrite").saveAsTable("menu_item")
 df_tax.write.format("delta").mode("overwrite").saveAsTable("tax")
+
 df_discount.write.format("delta").mode("overwrite").saveAsTable("discount")
 df_service_charge.write.format("delta").mode("overwrite").saveAsTable("service_charge")
 df_tender_media.write.format("delta").mode("overwrite").saveAsTable("tender_media")
 df_error_code.write.format("delta").mode("overwrite").saveAsTable("error_code")
+```
 
-print("Tabelas criadas com sucesso no formato Delta Lake.")
+# Desafio 2: Estratégias de Armazenamento e Impacto de Mudanças de Schema
+## 1. Vantagens de Manter o Dado Original Bruto (Raw Data)
+Manter o dado original bruto (raw data) é uma prática essencial para garantir a resiliência e a flexibilidade de um pipeline de dados. As principais vantagens incluem:
 
-Desafio 2: Questões Conceituais
-1. Por que manter uma cópia fiel dos dados crus (raw data) retornados pela API?
-Manter uma cópia fiel dos dados originais (raw data) é uma prática fundamental em engenharia de dados por várias razões:
+Auditabilidade e Reprocessamento: Permite refazer processos em caso de falhas ou erros, acompanhar as mudanças históricas e facilitar auditorias, garantindo a conformidade e a rastreabilidade dos dados.
 
-Rastreabilidade e Auditoria: Permite rastrear a linhagem dos dados (data lineage) e realizar auditorias, comparando os dados transformados com a fonte original a qualquer momento.
+Economia de Requisições: Evita chamadas repetitivas à API de origem, utilizando dados já salvos, o que pode reduzir custos e latência.
 
-Reprocessamento: Se ocorrer um erro no pipeline de transformação, é possível reprocessar os dados a partir da cópia fiel sem a necessidade de chamar a API novamente, o que economiza recursos e evita sobrecarga nos sistemas de origem.
+Flexibilidade para Novas Análises: Oferece o dado cru e sem transformações para outras equipes (ex: cientistas de dados) ou novas análises (ex: machine learning) que podem surgir no futuro, sem as restrições de um modelo pré-processado.
 
-Flexibilidade Analítica: Os dados brutos contêm todas as informações, sem perdas. Outras equipes ou projetos futuros podem ter necessidades diferentes e utilizar os mesmos dados crus para novas análises, modelos de machine learning ou relatórios.
+## 2. Estratégia de Armazenamento em Data Lake para Respostas de API
+Para organizar as respostas de API em um Data Lake, a estratégia ideal é particionar os dados de forma lógica, facilitando a governança, o acesso e a otimização de custos. Sugere-se uma estrutura de pastas particionada por API, ano, mês, dia e ID da loja.
 
-Análise Histórica: Permite analisar como os dados evoluíram ao longo do tempo, incluindo mudanças na estrutura da API.
+Exemplo de Caminho no Data Lake:
 
-2. Como você estruturaria o Data Lake para armazenar os dados JSON da API bi_getFiscalInvoice?
-Eu estruturaria o Data Lake com um sistema de particionamento hierárquico para otimizar a consulta e a organização dos dados. A estrutura de diretórios seguiria o padrão:
+``` /api_responses/bi_getFiscalInvoice/year=2025/month=07/day=28/storeId=123/response_20250728120000.json```
 
-/datalake/raw/bi_getFiscalInvoice/year=<YYYY>/month=<MM>/day=<DD>/storeId=<ID_DA_LOJA>/<timestamp>_response.json
+Essa abordagem hierárquica permite:
 
-Exemplo:
-/datalake/raw/bi_getFiscalInvoice/year=2025/month=07/day=28/storeId=123/20250728120000_response.json
+Filtragem Eficiente: Consultar dados de períodos ou lojas específicas de forma rápida.
 
-Justificativa:
+Gestão de Histórico: Manter um histórico completo e organizado de todas as respostas.
 
-Particionamento: Particionar por ano, mês, dia e storeId permite que as ferramentas de consulta (como Spark) filtrem os dados de forma eficiente, lendo apenas os diretórios necessários e evitando a varredura completa (full scan).
+Integridade dos Dados: Salvar o JSON original garante que o dado esteja sempre íntegro.
 
-Organização: A estrutura é intuitiva e facilita a localização de dados para um período ou loja específica.
+Flexibilidade de Formato: Os dados brutos podem, posteriormente, ser transformados para formatos otimizados para análise, como Parquet ou Delta Lake, em camadas de processamento subsequentes.
 
-Formato: Manter o JSON original na camada raw garante a fidelidade dos dados. Para as camadas seguintes (ex: trusted ou refined), os dados seriam convertidos para um formato colunar otimizado como Parquet ou Delta Lake.
+## 3. Impacto da Mudança no Nome de um Campo de API
 
-3. Qual o impacto da alteração do nome de um campo na origem dos dados (ex: valor_total para valorTotal)?
-A alteração do nome de um campo na origem tem um impacto direto e crítico nos pipelines de dados:
+A alteração no nome de um campo em uma API (ex: de old_field_name para new_field_name) pode ter um impacto significativo no pipeline de dados:
 
-Quebra do Pipeline: O pipeline de ETL que espera o nome antigo (valor_total) falhará ao tentar acessar um campo que não existe mais, causando a interrupção do processamento.
+Quebra do Processamento: O pipeline atual, que espera o nome antigo do campo, falhará ao tentar acessá-lo, resultando em erros ou perda de dados.
 
-Perda de Dados: Se o pipeline não tiver um tratamento de erro robusto, as novas informações do campo renomeado (valorTotal) não serão processadas, resultando em dados nulos ou incorretos nas tabelas de destino.
+Necessidade de Atualização: O pipeline de ingestão e transformação precisará ser atualizado para reconhecer e lidar com o novo nome do campo. Isso pode envolver modificações no código PySpark, como em operações de select ou withColumnRenamed.
 
-Necessidade de Manutenção: Exige uma atualização imediata no código do pipeline para refletir o novo nome do campo. Uma abordagem robusta seria implementar uma lógica que possa lidar com ambas as versões do campo por um tempo (para garantir a compatibilidade com dados antigos) ou versionar o schema.
+Lógica de Compatibilidade: Em alguns casos, pode ser necessário implementar lógica para suportar ambos os nomes (o antigo e o novo) durante um período de transição, especialmente em sistemas com dependências complexas ou quando a mudança não pode ser aplicada imediatamente em todos os consumidores.
 
-Governança de Dados: Reforça a necessidade de ter uma boa governança, incluindo monitoramento de schema (schema evolution/drift) e uma comunicação clara entre as equipes que mantêm as APIs e as que consomem os dados.
+Monitoramento e Comunicação: É crucial ter um processo robusto de monitoramento do schema das APIs e garantir uma comunicação proativa com as equipes consumidoras sobre quaisquer alterações. Ferramentas de governança de dados e contratos de API podem ajudar a mitigar esses riscos.
